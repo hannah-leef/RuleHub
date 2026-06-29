@@ -547,7 +547,7 @@ function renderCell(column, value, row) {
   if (column === "description") {
     if (!value) return "";
     if (row.raw) {
-      return `<a href="${escapeHtml(row.raw)}" target="_blank" rel="noopener">${escapeHtml(value)}</a> <img src="icons/einstein-equation.svg" width=28 alt="Energy">`;
+      return `<a href="${escapeHtml(row.raw)}" target="_blank" rel="noopener">${escapeHtml(value)}</a> <img src="icons/einstein-equation.svg" width="28" alt="Energy">`;
     }
     return escapeHtml(value);
   }
