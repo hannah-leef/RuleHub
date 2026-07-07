@@ -1,0 +1,57 @@
+id: "jak-stat-cytokine-signaling"
+name: "jak stat cytokine signaling"
+description: "Rate Constants"
+
+contributors:
+  - name: "Achyudhan"
+  - name: "Nabil Mardhy"
+
+tags: ["jak", "stat", "cytokine", "signaling", "receptor"]
+date:
+  last_tested: 2026-07-07
+
+category: "signaling"
+
+biol_categories: ["signaling"]
+
+comp_categories: ["other"]
+
+compatibility:
+  rr_compatible: true
+  bnglviz_compatible: true
+  bng2_compatible: true
+  bngp_compatible: true 
+  vcell_compatible: false
+  vcell_errors: "Encountered -> at line 35"
+  simulation_methods: ["ode", "ssa","nf"]
+  molclustpy_compatible: true #different simulation results from NFsim and MCP
+  uses_energy: false
+  uses_functions: true
+  uses_compartments: false
+  nfsim_compatible: true 
+
+Features:
+  uses_generate_network: true
+  default_sim_command: "ode" 
+  uses_totalrate: false
+  uses_moveconnected: false
+  uses_trash_molecules: false
+  uses_anchors: false
+  uses_multiple_identical_sites: false
+  uses_deletes_molecules: false
+  uses_exclude_include_reactants: false
+
+source:
+  origin: "ai-generated"
+  original_format: "bngl"
+  original_repository: "bionetgen-web-simulator"
+  source_path: "example-models/jak-stat-cytokine-signaling.bngl"
+ 
+playground:
+  visible: false
+  gallery_categories: ["immunology","test-models"]
+  featured: false
+  difficulty: "advanced"
+ 
+
+

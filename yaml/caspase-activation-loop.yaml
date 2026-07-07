@@ -1,0 +1,53 @@
+id: "caspase-activation-loop"
+name: "caspase activation loop"
+description: "Caspase activation loop: The executioner feedback system."
+
+contributors:
+  - name: "Achyudhan"
+  - name: "Nabil Mardhy"
+
+tags: ["caspase", "activation", "loop", "deathligand", "caspase8", "caspase3", "iap", "flip"]
+
+date:
+  last_tested: 2026-07-01
+
+biol_categories: ["signaling"]
+
+comp_categories: ["other"]
+
+compatibility:
+  rr_compatible: true
+  bnglviz_compatible: true
+  bng2_compatible: true 
+  bngp_compatible: true
+  vcell_compatible: false
+  vcell_errors: "Encountered 0 at line 85"
+  simulation_methods: ["ode", "ssa"]
+  nfsim_compatible: true #false in original metadata.yaml, but runs with nf on bng2  WARNING: Species with more than 20 molecules will be labeled with the Quasi method.     
+  molclustpy_compatible: false #IndexError: list index out of range
+
+Features:
+  uses_generate_network: true
+  default_sim_command: "ode" 
+  uses_energy: false
+  uses_functions: true 
+  uses_totalrate: false
+  uses_moveconnected: false
+  uses_trash_molecules: false
+  uses_anchors: false
+  uses_multiple_identical_sites: false
+  uses_deletes_molecules: false
+  uses_exclude_include_reactants: false
+
+source:
+  origin: "ai-generated"
+  original_format: "bngl"
+  original_repository: "bionetgen-web-simulator"
+  source_path: "example-models/calcium-spike-signaling.bngl"
+ 
+playground:
+  visible: false
+  gallery_categories: ["neuroscience","test-models"]
+  featured: false
+  difficulty: "advanced"
+ 

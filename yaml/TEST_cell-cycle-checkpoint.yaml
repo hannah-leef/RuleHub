@@ -1,0 +1,53 @@
+id: "cell-cycle-checkpoint"
+name: "cell cycle checkpoint"
+description: "Cell cycle checkpoint: Mitotic entry switch (CDK1)."
+
+contributors:
+  - name: "Achyudhan"
+  - name: "Nabil Mardhy"
+
+tags: ["cell", "cycle", "checkpoint", "cyclin", "cdk", "cdc25", "wee1", "apc", "p21"]
+
+date:
+  last_tested: 2026-07-01
+
+biol_categories: ["cell cycle"]
+
+comp_categories: ["other"]
+
+compatibility:
+  rr_compatible: true
+  bnglviz_compatible: true
+  bng2_compatible: true 
+  bngp_compatible: true
+  vcell_compatible: false
+  vcell_errors: "Encountered ! at line 77"
+  simulation_methods: ["ode", "ssa"]
+  nfsim_compatible: false  #....
+  molclustpy_compatible: false #UnboundLocalError: cannot access local variable 'stdout_str' where it is not associated with a value
+
+Features:
+  uses_generate_network: true
+  default_sim_command: "ode" 
+  uses_energy: false
+  uses_functions: true 
+  uses_totalrate: false
+  uses_moveconnected: false
+  uses_trash_molecules: false
+  uses_anchors: false
+  uses_multiple_identical_sites: false
+  uses_deletes_molecules: false
+  uses_exclude_include_reactants: false
+
+source:
+  origin: "ai-generated"
+  original_format: "bngl"
+  original_repository: "bionetgen-web-simulator"
+  source_path: "example-models/cell-cycle-checkpoint.bngl"
+ 
+playground:
+  visible: false
+  gallery_categories: ["cell-cycle","test-models"]
+  featured: false
+  difficulty: "advanced"
+ 

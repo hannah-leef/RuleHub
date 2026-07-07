@@ -1,0 +1,60 @@
+id: "lac-operon-regulation"
+name: "lac operon regulation"
+description: "Kinetic Parameters"
+
+contributors:
+  - name: "Achyudhan"
+  - name: "Nabil Mardhy"
+
+tags: ["lac", "operon", "regulation", "laci", "promoter", "mrna", "betagal", "lactose", "allolactose"]
+date:
+  last_tested: 2026-07-07
+
+category: "signaling"
+
+biol_categories: ["regulation"]
+
+comp_categories: ["other"]
+
+compatibility:
+  rr_compatible: true
+  bnglviz_compatible: true
+  bng2_compatible: true
+  bngp_compatible: true 
+  vcell_compatible: false
+  vcell_errors: "Encountered 0 at line 53"
+  simulation_methods: ["ode", "ssa","nf"]
+  molclustpy_compatible: false #IndexError: list index out of range
+  uses_energy: false
+  uses_functions: true
+  uses_compartments: false
+  nfsim_compatible: true
+
+Features:
+  uses_generate_network: true
+  default_sim_command: "ode" 
+  uses_totalrate: false
+  uses_moveconnected: false
+  uses_trash_molecules: false
+  uses_anchors: false
+  uses_multiple_identical_sites: false
+  uses_deletes_molecules: false
+  uses_exclude_include_reactants: false
+  uses_energy: false
+  uses_functions: true
+  uses_compartments: false
+
+source:
+  origin: "ai-generated"
+  original_format: "bngl"
+  original_repository: "bionetgen-web-simulator"
+  source_path: "example-models/lac-operon-regulation.bngl"
+ 
+playground:
+  visible: false
+  gallery_categories: ["metabolism","test-models"]
+  featured: false
+  difficulty: "advanced"
+ 
+
+

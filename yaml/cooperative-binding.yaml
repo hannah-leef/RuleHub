@@ -1,0 +1,53 @@
+id: "cooperative-binding"
+name: "cooperative binding"
+description: "Cooperative binding: The binding of the first ligand molecule increases"
+
+contributors:
+  - name: "Achyudhan"
+  - name: "Nabil Mardhy"
+
+tags: ["cooperative", "binding", "receptor", "ligand", "competitor"]
+
+date:
+  last_tested: 2026-07-02
+
+biol_categories: ["signaling"]
+
+comp_categories: ["other"]
+
+compatibility:
+  rr_compatible: true
+  bnglviz_compatible: true
+  bng2_compatible: true 
+  bngp_compatible: true
+  vcell_compatible: true #put actions outside of model
+  vcell_errors: 
+  simulation_methods: ["ode", "ssa","nf"]
+  nfsim_compatible: true  
+  molclustpy_compatible: true
+
+Features:
+  uses_generate_network: true
+  default_sim_command: "ode" 
+  uses_energy: false
+  uses_functions: false
+  uses_totalrate: false
+  uses_moveconnected: false
+  uses_trash_molecules: false
+  uses_anchors: false
+  uses_multiple_identical_sites: false
+  uses_deletes_molecules: false
+  uses_exclude_include_reactants: false
+
+source:
+  origin: "ai-generated"
+  original_format: "bngl"
+  original_repository: "bionetgen-web-simulator"
+  source_path: "example-models/cooperative-binding.bngl"
+ 
+playground:
+  visible: false
+  gallery_categories: ["test-models"]
+  featured: false
+  difficulty: "advanced"
+ 
