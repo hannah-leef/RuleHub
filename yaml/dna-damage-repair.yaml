@@ -28,6 +28,7 @@ compatibility:
   uses_functions: false
   nfsim_compatible: true
   molclustpy_compatible: true
+  comments: "nfsim_compatible changed to true, runs with bng2 and bngp" 
 
 features:
   uses_generate_network: true
