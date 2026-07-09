@@ -23,13 +23,14 @@ compatibility:
   bnglviz_compatible: true
   bng2_compatible: true
   vcell_compatible: true
-  vcell_errors: 'MCP: IndexError: list index out of range'
-  simulation_methods: [ "ode", "ssa", "nf"]
+  vcell_errors:
+  simulation_methods: ["ode", "ssa", "nf"]
   uses_compartments: false
   uses_energy: false
   uses_functions: true
   nfsim_compatible: true
   molclustpy_compatible: false
+  comments: "bng2 works, bngp does not, molclustpy list index out of range"
 
 features:
   uses_generate_network: true
