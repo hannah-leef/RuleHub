@@ -13,9 +13,7 @@ date:
   last_tested: 2026-06-26
 
 category: "signaling"
-
 biol_categories: ["signaling"]
-
 comp_categories: ["other"]
 
 compatibility:
@@ -23,13 +21,14 @@ compatibility:
   bnglviz_compatible: true
   bng2_compatible: true
   vcell_compatible: true
-  vcell_errors: "MCP: cannot access local variable 'stdout_str' where it is not associated with a value"
+  vcell_errors: 
   simulation_methods: ["ode", "ssa", "nf"]
   uses_compartments: false
   uses_energy: false
   uses_functions: false
   nfsim_compatible: true
   molclustpy_compatible: false
+  comments: "molclustpy cannot access local variable stdout_str where it is not associated with a value"
 
 features:
   uses_generate_network: true
