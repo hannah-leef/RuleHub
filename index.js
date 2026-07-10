@@ -97,7 +97,7 @@ const COLUMN_LABELS = {
   "name": "Name",
   "description": "Description",
   "bngl_code": "BNGL code",
-  "tools": "Tools",
+  "tools": "Vizualization & Online Simulation",
   "citation.year": "Year",
   "citation.pmid": "PubMed ID",
   "citation.doi": "DOI",
