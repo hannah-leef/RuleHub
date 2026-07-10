@@ -12,9 +12,7 @@ date:
   last_tested: 2026-07-07
 
 category: "signaling"
-
 biol_categories: ["signaling"]
-
 comp_categories: ["other"]
 
 compatibility:
@@ -23,7 +21,7 @@ compatibility:
   bng2_compatible: true
   bngp_compatible: true
   vcell_compatible: true
-  vcell_errors: "VCELL: RuntimeException-Application 'NFSim app' has no generated Math, Failed to generate new Math: not mass action: flattened Kf for reactionRule(r5) is not numeric, exp = '(3.0 * Total_pJNK / (250.0 + Total_pJNK))' MappingException-not mass action: flattened Kf for reactionRule(r5) is not numeric, exp = '(3.0 * Total_pJNK / (250.0 + Total_pJNK))'"
+  vcell_errors: "VCELL: RuntimeException-Application NFSim app has no generated Math, Failed to generate new Math: not mass action: flattened Kf for reactionRule(r5) is not numeric, exp = (3.0 * Total_pJNK / (250.0 + Total_pJNK)) MappingException-not mass action: flattened Kf for reactionRule(r5) is not numeric, exp = (3.0 * Total_pJNK / (250.0 + Total_pJNK))"
   simulation_methods: ["ode", "ssa"]
   uses_energy: false
   uses_functions: true
