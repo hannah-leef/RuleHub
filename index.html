@@ -18,7 +18,7 @@
   <h2>World of Rule-Based Models</h2>
 
   <nav class="main-nav">
-    <a href="index.html" class="active"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+    <a href="index2.html" class="active"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
 <path d="M 12 2.0996094 L 1 12 L 4 12 L 4 21 L 11 21 L 11 15 L 13 15 L 13 21 L 20 21 L 20 12 L 23 12 L 12 2.0996094 z M 12 4.7910156 L 18 10.191406 L 18 11 L 18 19 L 15 19 L 15 13 L 9 13 L 9 19 L 6 19 L 6 10.191406 L 12 4.7910156 z"></path>
 </svg>Models</a>
     <a href="description.html">Rule-Based Modeling</a>
@@ -32,7 +32,6 @@
   <section class="hero">
 
   <div class="hero-left">
-  <br>
     
     <h3 id="modelCount" class="stat total-stat" style="
         margin-bottom: 5px;
@@ -56,11 +55,6 @@
     placeholder="🔍 Search models..."
     aria-label="Search models"
   />
-
-  <div class="hero-buttons">
-    <button id="reload">Reload from GitHub</button>
-    <button id="downloadCsv">Download CSV</button>
-  </div>
 
 </div>
 
@@ -93,21 +87,36 @@
       </div>
 
       <div class="filter-group">
-        <span class="filter-group-title">Type:</span>
+        <span class="filter-group-title">Source:</span>
 
         <label>
-          <input type="checkbox" class="type-checkbox" value="Examples" checked>
-          Examples
+          <input type="checkbox" class="type-checkbox" value="ai-generated" checked>
+          AI-Generated
         </label>
 
         <label>
-          <input type="checkbox" class="type-checkbox" value="Tutorials" checked>
+          <input type="checkbox" class="type-checkbox" value="tutorial" checked>
           Tutorials
         </label>
 
         <label>
-          <input type="checkbox" class="type-checkbox" value="Published" checked>
+          <input type="checkbox" class="type-checkbox" value="published" checked>
           Published
+        </label>
+
+        <label>
+          <input type="checkbox" class="type-checkbox" value="contributed" checked>
+          Contributed
+        </label>
+
+        <label>
+          <input type="checkbox" class="type-checkbox" value="test-case" checked>
+          Test-Case
+        </label>
+
+        <label>
+          <input type="checkbox" class="type-checkbox" value="ported-from-sbml" checked>
+          SBML Port
         </label>
       </div>
 
@@ -116,10 +125,10 @@
   <div class="filter-group">
     <span class="filter-group-title">Compatibility:</span>
 
-    <label><input type="checkbox" class="feature-checkbox" value="compatibility.bng2_compatible"> BNG2 <img src="icons/bng2.svg" width="20"></label>
-    <label><input type="checkbox" class="feature-checkbox" value="compatibility.nfsim_compatible"> NFsim <img src="icons/nfsim.svg" width="20"></label>
-    <label><input type="checkbox" class="feature-checkbox" value="compatibility.vcell_compatible"> VCell</label>
-    <label><input type="checkbox" class="feature-checkbox" value="compatibility.molclustpy_compatible"> MolClustPy <img src="icons/molclustpy.svg" width="20"></label>
+    <label><input type="checkbox" class="feature-checkbox" value="compatibility.bng2_compatible"> BNG2 <img src="icons/BNG2.svg" width="20"></label>
+    <label><input type="checkbox" class="feature-checkbox" value="compatibility.nfsim_compatible"> NFsim <img src="icons/NFsim.svg" width="20"></label>
+    <label><input type="checkbox" class="feature-checkbox" value="compatibility.vcell_compatible"> VCell <img src="icons/vcell_compatible.svg" width="20"></label>
+    <label><input type="checkbox" class="feature-checkbox" value="compatibility.molclustpy_compatible"> MolClustPy <img src="icons/MolClustPy.svg" width="20"></label>
   </div>
 
   <div class="filter-group">
@@ -149,6 +158,7 @@
     <label>
       <input type="checkbox" class="feature-checkbox" value="compatibility.uses_vcell_compartments">
       VCell Compartments
+      <img src="icons/vcell-compartments.svg" width="20">
     </label>
 
     <label>
@@ -171,6 +181,7 @@
     <label>
       <input type="checkbox" class="feature-checkbox" value="compatibility.uses_trash_molecules">
       Trash Molecules
+      <img src="icons/trash1.svg" width="20">
     </label>
 
     <label>
@@ -182,6 +193,7 @@
     <label>
       <input type="checkbox" class="feature-checkbox" value="compatibility.uses_multiple_identical_sites">
       Multiple Identical Sites
+      <img src="icons/multiple_sites.svg" width="20">
     </label>
 
     <label>
