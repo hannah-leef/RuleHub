@@ -1,4 +1,4 @@
-const OWNER = "RuleWorld";
+const OWNER = "Psuedonerd";
 const REPO = "RuleHub";
 const BRANCH = "master";
 
@@ -17,6 +17,9 @@ const RAW_BASE =
 const GITHUB_BLOB_BASE =
   `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/`;
 
+const GITHUB_TREE_BASE =
+  `https://github.com/${OWNER}/${REPO}/tree/${BRANCH}/`;
+
 const BNGLVIZ_PAGE =
   "https://bnglviz.github.io/bngl_bnglviz.html";
 
@@ -30,7 +33,8 @@ const DEFAULT_VISIBLE_COLUMNS = [
   "source.origin",
   "name",
   "description",
-  "tools"
+  "tools",
+  "simulate_tools",
 ];
 
 const FEATURE_FILTER_COLUMNS = new Set([
@@ -72,6 +76,14 @@ const COMMENTED_OUT_COLUMN_CHECKBOXES = new Set([
 const HIDDEN_COLUMN_CHECKBOXES = new Set([
   "playground.difficulty",
   "difficulty",
+  "type",
+  "bnglviz",
+  "bngplayground",
+  "rules_railroad",
+  "compatibility.uses_compartments",
+  "compatibility.uses_energy",
+  "compatibility.uses_functions",
+  "github_link",
   ...FEATURE_FILTER_COLUMNS,
   ...COMMENTED_OUT_COLUMN_CHECKBOXES
 ]);
@@ -79,6 +91,7 @@ const HIDDEN_COLUMN_CHECKBOXES = new Set([
 const NON_SORTABLE_COLUMNS = new Set([
   "bngl_code",
   "tools",
+  "simulate_tools",
   "github",
   "github_link",
   "raw"
@@ -93,11 +106,14 @@ const FUTURE_COLUMNS = new Set([
 ]);
 
 const COLUMN_LABELS = {
-  "source.origin": "Type",
-  "name": "Name",
+  "source.origin": "Source",
+  "name": "BNGL Model",
   "description": "Description",
+  "tags" : "Tags",
+  "category": "Category",
   "bngl_code": "BNGL code",
-  "tools": "Vizualization & Online Simulation",
+  "tools": "Click to Visualize",
+  "simulate_tools": "Click to Simulate",
   "citation.year": "Year",
   "citation.pmid": "PubMed ID",
   "citation.doi": "DOI",
@@ -105,7 +121,7 @@ const COLUMN_LABELS = {
   "comp_categories": "Other Categories",
   "github": "GitHub",
   "github_link": "GitHub",
-  "compatibility.simulation_methods": "simulation methods"
+  "compatibility.simulation_methods": "Sim Methods"
 };
 
 let table;
@@ -248,11 +264,11 @@ function getSelectedTypes() {
 function rowMatchesType(row) {
   const selected = getSelectedTypes();
 
-  if (!row.type) {
+  if (!row["source.origin"]) {
     return selected.size > 0;
   }
 
-  return selected.has(row.type);
+  return selected.has(row["source.origin"]);
 }
 
 function getSelectedFeatureFilters() {
@@ -421,6 +437,9 @@ async function loadAllMetadata() {
 
   rows = rowGroups.flat();
 
+  console.log("rows:", rows.length);
+  console.log(rows[0]);
+
   const allColumnNames = new Set();
   rows.forEach(row => Object.keys(row).forEach(key => allColumnNames.add(key)));
 
@@ -429,11 +448,11 @@ async function loadAllMetadata() {
     "name",
     "description",
     "tools",
+    "simulate_tools",
     "citation.year",
     "citation.pmid",
     "citation.doi",
     "github_link",
-    "github",
     "bngl_item",
     "yaml_github",
     "bngl_file",
@@ -470,6 +489,7 @@ async function loadAllMetadata() {
         FUTURE_COLUMNS.has(column) ||
         column === "source.origin" ||
         column === "tools" ||
+        column === "simulate_tools" ||
         column === "github_link"
       ) &&
       !HIDDEN_COLUMN_CHECKBOXES.has(column)
@@ -548,37 +568,86 @@ function renderCell(column, value, row) {
   }
 
 if (column === "description") {
-  if (!value) return "";
+    if (!value) return "";
 
-  if (row.raw) {
-    const energyIcon = isTruthyYamlValue(
-      row["features.uses_energy"] ??
-      row["compatibility.uses_energy"]
-    )
-      ? ` <img src="icons/einstein-equation.svg" width="28" alt="Energy">`
-      : "";
+    if (row.raw) {
 
-    const functionIcon = isTruthyYamlValue(
-      row["features.uses_functions"] ??
-      row["compatibility.uses_functions"]
-    )
-      ? ` <img src="icons/functions.svg" width="28" alt="Functions">`
-      : "";
+      const vcellcompatibilityIcon = isTruthyYamlValue(row["compatibility.vcell_compatible"])
+        ? ` <img src="icons/vcell_compatible.svg" width="28" alt="VCell Compatibility" title="VCell Compatible">` : "";
+      
+      const nfsimIcon = isTruthyYamlValue(row["compatibility.nfsim_compatible"])
+        ? ` <img src="icons/NFsim.svg" width="28" alt="NFsim" title="NFsim Compatible">` : "";
+        
+      const bng2Icon = isTruthyYamlValue(row["compatibility.bng2_compatible"])
+        ? ` <img src="icons/BNG2.svg" width="28" alt="BNG2" title="BNG2 Compatible">` : "";
+        
+      const molclustpyIcon = isTruthyYamlValue(row["compatibility.molclustpy_compatible"])
+        ? ` <img src="icons/MolClustPy.svg" width="28" alt="MolClustPy" title="MolClustPy Compatible">` : "";
 
-    return `<a href="${escapeHtml(row.raw)}" target="_blank" rel="noopener">${escapeHtml(value)}</a>${energyIcon}${functionIcon}`;
+      const compatibilityIcons = `${vcellcompatibilityIcon}${nfsimIcon}${bng2Icon}${molclustpyIcon}`;
+
+      // 2. FEATURE ICONS (To be placed second)
+      const energyIcon = isTruthyYamlValue(row["features.uses_energy"] ?? row["compatibility.uses_energy"])
+        ? ` <img src="icons/einstein-equation.svg" width="28" alt="Energy" title="Uses Energy">` : "";
+
+      const trashIcon = isTruthyYamlValue(row["features.uses_trash_molecules"] ?? row["compatibility.uses_trash_molecules"])
+        ? ` <img src="icons/trash1.svg" width="28" alt="Trash Molecules" title="Uses Trash Molecules">` : "";
+
+      const functionIcon = isTruthyYamlValue(row["features.uses_functions"] ?? row["compatibility.uses_functions"])
+        ? ` <img src="icons/functions.svg" width="28" alt="Functions" title="Uses Functions">` : "";
+
+      const vcellcompartmentsIcon = isTruthyYamlValue(row["features.uses_vcell_compartments"] ?? row["compatibility.uses_vcell_compartments"])
+        ? ` <img src="icons/vcell-compartments.svg" width="28" alt="VCell Compartments" title="Uses VCell Compartments">` : "";
+
+      const featureIcons = `${energyIcon}${functionIcon}${trashIcon}${vcellcompartmentsIcon}`;
+
+      const githubLink = row.path 
+        ? ` <a href="${escapeHtml(GITHUB_TREE_BASE + dirname(row.path))}" target="_blank" rel="noopener" style="margin-left: 8px; font-weight: 600;">GitHub</a>` : "";
+
+      const yamlLink = row.raw 
+        ? ` <a href="${escapeHtml(row.raw)}" target="_blank" rel="noopener" style="margin-left: 8px; font-weight: 600;">.yaml</a>` : "";
+
+        return `<span>${escapeHtml(value)}</span>${compatibilityIcons}${featureIcons}${githubLink}${yamlLink}`;
+    }
+
+    return escapeHtml(value);
   }
-
-  return escapeHtml(value);
-}
 
 if (column === "tools") {
     if (!value) return "";
 
     let iconsHtml = "";
+    // BNGViz and RRR icons
     iconsHtml += renderSingleViewLink(value, "bnglVizUrl", "icons/bngl.svg", "bnglViz");
-    iconsHtml += renderSingleViewLink(value, "rulesRailRoadUrl", "icons/rulesrailroads.svg", "RulesRailRoad");
-    iconsHtml += renderSingleViewLink(value, "bngPlaygroundUrl", "icons/BNGPlayground.svg", "bngPlayground");
-    // iconsHtml += renderSingleViewLink(value, "molClustPyUrl", "icons/molclustpy.svg", "MolClustPy");
+    iconsHtml += renderSingleViewLink(value, "rulesRailRoadUrl", "icons/RR.svg", "RulesRailRoad");
+    
+    // MPD static text link
+    iconsHtml += `<a href="https://github.com/vcellmike/MolecularProcessDiagram" target="_blank" rel="noopener" title="Molecular Process Diagram" style="font-weight: bold; text-decoration: none; padding-left: 5px;">MPD</a>`;
+
+    return `<div style="display: flex; gap: 14px; align-items: center; padding-right: 25px;">${iconsHtml}</div>`;
+  }
+
+if (column === "simulate_tools") {
+    // Because this column isn't in your YAML, 'value' is undefined. 
+    // We pull the item links from row.tools instead!
+    const item = row.tools; 
+    
+    let iconsHtml = "";
+    
+    // BNGPlayground icon (Dynamic based on row)
+    if (item) {
+      iconsHtml += renderSingleViewLink(item, "bngPlaygroundUrl", "icons/BNGPlayground.svg", "bngPlayground");
+    }
+    
+    // MCP static icon link
+    iconsHtml += `<a href="https://molclustpy.github.io/" target="_blank" rel="noopener" title="MolClustPy">
+                    <img src="icons/molclustpy.svg" alt="MCP" width="44" height="44" style="vertical-align: middle;">
+                  </a>`;
+                  
+    // VCell static icon link
+    iconsHtml += `<a href="http://vcell.org" target="_blank" rel="noopener" title="VCell">
+                    <img src="icons/vcell.svg" alt="VCell" width="44" height="44" style="vertical-align: middle;">
+                  </a>`;
 
     return `<div style="display: flex; gap: 14px; align-items: center;">${iconsHtml}</div>`;
   }
@@ -887,8 +956,10 @@ function updatePagination(totalFilteredRows) {
 }
 
 function updateStatus() {
+  // Use row.type instead of row["source.origin"]
   const typeCounts = rows.reduce((acc, row) => {
-    acc[row.type] = (acc[row.type] || 0) + 1;
+    const modelType = row.type || "Unknown"; // Fallback just in case
+    acc[modelType] = (acc[modelType] || 0) + 1;
     return acc;
   }, {});
 
@@ -896,23 +967,21 @@ function updateStatus() {
     .map(type => `${type}: ${typeCounts[type] || 0}`)
     .join("; ");
 
-    // Update hero statistics
-document.getElementById("modelCount").textContent =
-  `${rows.length} Total Models`;
+  // Update hero statistics
+  document.getElementById("modelCount").textContent =
+    `${rows.length} Total Models`;
 
-document.getElementById("modelSummary").innerHTML = `
-  <span class="stat published">
-    Published: ${typeCounts.Published || 0}
-  </span>
-
-  <span class="stat examples">
-    Examples: ${typeCounts.Examples || 0}
-  </span>
-
-  <span class="stat tutorials">
-    Tutorials: ${typeCounts.Tutorials || 0}
-  </span>
-`;
+  document.getElementById("modelSummary").innerHTML = `
+    <span class="stat published">
+      Published: ${typeCounts.Published || 0}
+    </span>
+    <span class="stat examples">
+      Examples: ${typeCounts.Examples || 0}
+    </span>
+    <span class="stat tutorials">
+      Tutorials: ${typeCounts.Tutorials || 0}
+    </span>
+  `;
 
   statusEl.textContent =
     `Loaded ${rows.length} row(s) from YAML/BNGL file(s). Showing ${visibleColumns.size} column(s). ${summary}.`;
@@ -1000,9 +1069,16 @@ function initDomReferences() {
 }
 
 function attachEventListeners() {
-  document.getElementById("reload").addEventListener("click", loadAllMetadata);
 
-  document.getElementById("downloadCsv").addEventListener("click", downloadCsv);
+    const reloadBtn = document.getElementById("reload");
+if (reloadBtn) {
+    reloadBtn.addEventListener("click", loadAllMetadata);
+}
+
+const downloadBtn = document.getElementById("downloadCsv");
+if (downloadBtn) {
+    downloadBtn.addEventListener("click", downloadCsv);
+}
 
   document.querySelectorAll(".simulation-checkbox").forEach(input => {
   input.addEventListener("change", () => {
@@ -1018,6 +1094,36 @@ function attachEventListeners() {
     renderTable();
     updateStatus();
   });
+
+  document.getElementById("restoreDefaults").addEventListener("click", () => {
+
+    searchEl.value = "";
+
+  document.querySelectorAll(".difficulty-checkbox")
+    .forEach(cb => cb.checked = true);
+
+// Source
+  document.querySelectorAll(".type-checkbox")
+    .forEach(cb => cb.checked = true);
+
+// Everything else
+  document.querySelectorAll(".feature-checkbox, .simulation-checkbox")
+    .forEach(cb => cb.checked = false);
+  
+  visibleColumns = new Set(
+    DEFAULT_VISIBLE_COLUMNS.filter(column => columns.includes(column))
+  );
+  renderColumnCheckboxes();
+
+  sortState = { column: null, direction: 1 };
+
+  currentPage = 1;
+
+  renderTable();
+  updateStatus();
+
+  pageSizeEl.value = "50";
+});
 
   document.getElementById("showAll").addEventListener("click", () => {
     visibleColumns = new Set(columns);
