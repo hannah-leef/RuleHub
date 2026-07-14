@@ -1,4 +1,4 @@
-const OWNER = "pseudonerd";
+const OWNER = "Psuedonerd";
 const REPO = "RuleHub";
 const BRANCH = "master";
 
@@ -1094,6 +1094,36 @@ if (downloadBtn) {
     renderTable();
     updateStatus();
   });
+
+  document.getElementById("restoreDefaults").addEventListener("click", () => {
+
+    searchEl.value = "";
+
+  document.querySelectorAll(".difficulty-checkbox")
+    .forEach(cb => cb.checked = true);
+
+// Source
+  document.querySelectorAll(".type-checkbox")
+    .forEach(cb => cb.checked = true);
+
+// Everything else
+  document.querySelectorAll(".feature-checkbox, .simulation-checkbox")
+    .forEach(cb => cb.checked = false);
+  
+  visibleColumns = new Set(
+    DEFAULT_VISIBLE_COLUMNS.filter(column => columns.includes(column))
+  );
+  renderColumnCheckboxes();
+
+  sortState = { column: null, direction: 1 };
+
+  currentPage = 1;
+
+  renderTable();
+  updateStatus();
+
+  pageSizeEl.value = "50";
+});
 
   document.getElementById("showAll").addEventListener("click", () => {
     visibleColumns = new Set(columns);

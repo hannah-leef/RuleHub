@@ -49,91 +49,77 @@
 
  <div class="hero-right">
 
-  <input
-    id="search"
+  <div class="search-controls">
+    <input     id="search"
     type="search"
     placeholder="🔍 Search models..."
     aria-label="Search models"
   />
+  <button id="restoreDefaults" class="small-button">
+      Restore Default
+  </button>
+</div>
 
 </div>
 
 </section>
 
-  <div id="status">Loading...</div>
+<div id="status">Loading...</div>
 
-  <details class="filter-panel" open>
-   
-    <summary><h2>Filters</h2></summary>
+<div class="filter-row">
 
-    <div class="filter-groups">
-      <div class="filter-group">
-        <span class="filter-group-title">Difficulty:</span>
-
-        <label class="difficulty-beginner">
-          <input type="checkbox" class="difficulty-checkbox" value="beginner" checked>
-          Beginner
-        </label>
-
-        <label class="difficulty-intermediate">
-          <input type="checkbox" class="difficulty-checkbox" value="intermediate" checked>
-          Intermediate
-        </label>
-
-        <label class="difficulty-advanced">
-          <input type="checkbox" class="difficulty-checkbox" value="advanced" checked>
-          Advanced
-        </label>
-      </div>
-
-      <div class="filter-group">
-        <span class="filter-group-title">Source:</span>
-
-        <label>
-          <input type="checkbox" class="type-checkbox" value="ai-generated" checked>
-          AI-Generated
-        </label>
-
-        <label>
-          <input type="checkbox" class="type-checkbox" value="tutorial" checked>
-          Tutorials
-        </label>
-
-        <label>
-          <input type="checkbox" class="type-checkbox" value="published" checked>
-          Published
-        </label>
-
-        <label>
-          <input type="checkbox" class="type-checkbox" value="contributed" checked>
-          Contributed
-        </label>
-
-        <label>
-          <input type="checkbox" class="type-checkbox" value="test-case" checked>
-          Test-Case
-        </label>
-
-        <label>
-          <input type="checkbox" class="type-checkbox" value="ported-from-sbml" checked>
-          SBML Port
-        </label>
-      </div>
-
-<div class="horizontal-filter-block">
+<details class="filter-panel small-filter" closed>
+  <summary><h2>Filter By Difficulty</h2></summary>
 
   <div class="filter-group">
-    <span class="filter-group-title">Compatibility:</span>
+    <label class="difficulty-beginner">
+      <input type="checkbox" class="difficulty-checkbox" value="beginner" checked>
+      Beginner
+    </label>
 
+    <label class="difficulty-intermediate">
+      <input type="checkbox" class="difficulty-checkbox" value="intermediate" checked>
+      Intermediate
+    </label>
+
+    <label class="difficulty-advanced">
+      <input type="checkbox" class="difficulty-checkbox" value="advanced" checked>
+      Advanced
+    </label>
+  </div>
+</details>
+
+ <details class="filter-panel small-filter" closed>
+  <summary><h2>Filter By Source</h2></summary>
+
+  <div class="filter-group">
+    <label><input type="checkbox" class="type-checkbox" value="ai-generated" checked> AI-Generated</label>
+    <label><input type="checkbox" class="type-checkbox" value="tutorial" checked> Tutorials</label>
+    <label><input type="checkbox" class="type-checkbox" value="published" checked> Published</label>
+    <label><input type="checkbox" class="type-checkbox" value="contributed" checked> Contributed</label>
+    <label><input type="checkbox" class="type-checkbox" value="test-case" checked> Test-Case</label>
+    <label><input type="checkbox" class="type-checkbox" value="ported-from-sbml" checked> SBML Port</label>
+  </div>
+</details>
+</div>
+
+<div class="filter-row">
+
+ <details class="filter-panel small-filter" closed>
+  <summary><h2>Filter By Compatibility</h2></summary>
+
+  <div class="filter-group">
     <label><input type="checkbox" class="feature-checkbox" value="compatibility.bng2_compatible"> BNG2 <img src="icons/BNG2.svg" width="20"></label>
     <label><input type="checkbox" class="feature-checkbox" value="compatibility.nfsim_compatible"> NFsim <img src="icons/NFsim.svg" width="20"></label>
     <label><input type="checkbox" class="feature-checkbox" value="compatibility.vcell_compatible"> VCell <img src="icons/vcell_compatible.svg" width="20"></label>
     <label><input type="checkbox" class="feature-checkbox" value="compatibility.molclustpy_compatible"> MolClustPy <img src="icons/MolClustPy.svg" width="20"></label>
   </div>
+</details>
+
+ <details class="filter-panel small-filter" closed>
+  <summary><h2>Filter By Simulation</h2></summary>
 
   <div class="filter-group">
-    <span class="filter-group-title">Simulation:</span>
-
     <label><input type="checkbox" class="simulation-checkbox" value="ode"> ODE</label>
     <label><input type="checkbox" class="simulation-checkbox" value="ssa"> SSA</label>
     <label><input type="checkbox" class="simulation-checkbox" value="nf"> NF</label>
@@ -142,14 +128,13 @@
     <label><input type="checkbox" class="simulation-checkbox" value="molclustpy"> MolClustPy</label>
     <label><input type="checkbox" class="simulation-checkbox" value="vcell"> VCell</label>
   </div>
-
+</details>
 </div>
 
-<div class="horizontal-filter-block">
+<details class="filter-panel" closed>
+  <summary><h2>Filter By Features</h2></summary>
 
   <div class="filter-group">
-    <span class="filter-group-title">Features:</span>
-
     <label>
       <input type="checkbox" class="feature-checkbox" value="compatibility.uses_cbngl_compartments">
       CBNGL Compartments
@@ -210,13 +195,7 @@
       <input type="checkbox" class="feature-checkbox" value="compatibility.uses_generate_network">
       Generate Network
     </label>
-
   </div>
-
-</div>
-
-</div>
-
 </details>
 
   <section class="column-panel">

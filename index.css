@@ -204,7 +204,7 @@ button {
 .column-panel {
   border: 1px solid #ddd;
   border-radius: 6px;
-  padding: .7rem;
+  padding: .5rem;
   margin: 1rem 0 1.5rem;
   background: #fafafa;
 }
@@ -488,4 +488,17 @@ a {
     align-items: center;
     gap: 5px;
     white-space: nowrap;
+}
+
+.filter-row {
+    display: flex;
+    gap: 12px;
+    margin: 1rem 0;
+    align-items: flex-start;
+}
+
+.small-filter {
+    flex: 1;
+    min-width: 300px;
+    margin: 0;
 }
