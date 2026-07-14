@@ -1,4 +1,4 @@
-const OWNER = "RuleWorld";
+const OWNER = "pseudonerd";
 const REPO = "RuleHub";
 const BRANCH = "master";
 
