@@ -29,12 +29,17 @@ const RULES_RAILROAD_PAGE =
 const BNG_PLAYGROUND_PAGE =
   "https://ruleworld.github.io/bngplayground/";
 
+const expandAllBtn = document.getElementById("expand-all");
+
+const collapseAllBtn = document.getElementById("collapse-all");
+
 const DEFAULT_VISIBLE_COLUMNS = [
   "source.origin",
   "name",
   "description",
   "tools",
   "simulate_tools",
+  "ai_column",
 ];
 
 const FEATURE_FILTER_COLUMNS = new Set([
@@ -82,8 +87,28 @@ const HIDDEN_COLUMN_CHECKBOXES = new Set([
   "rules_railroad",
   "compatibility.uses_compartments",
   "compatibility.uses_energy",
+  "Features.uses_energy",
   "compatibility.uses_functions",
   "github_link",
+  "features.uses_trash_molecules",
+  "Features.uses_trash_molecules",
+  "Features.uses_exclude_include_reactants",
+  "features.uses_exclude_include_reactants",
+  "Features.uses_functions",
+  "features.uses_multiple_identical_sites",
+  "Features.uses_multiple_identical_sites",
+  "features.uses_anchors",
+  "Features.uses_anchors",
+  "features.uses_generate_network",
+  "Features.uses_generate_network",
+  "features.uses_moveconnected",
+  "Features.uses_moveconnected",
+  "features.uses_deletes_molecules",
+  "Features.uses_deletes_molecules",
+  "compatibility.vcell_compatible",
+  "compatibility.molclustpy_compatible",
+  "Features.default_sim_command",
+  "Features.uses_totalrate",
   ...FEATURE_FILTER_COLUMNS,
   ...COMMENTED_OUT_COLUMN_CHECKBOXES
 ]);
@@ -94,7 +119,8 @@ const NON_SORTABLE_COLUMNS = new Set([
   "simulate_tools",
   "github",
   "github_link",
-  "raw"
+  "raw",
+  "ai_column"
 ]);
 
 const FUTURE_COLUMNS = new Set([
@@ -121,7 +147,8 @@ const COLUMN_LABELS = {
   "comp_categories": "Other Categories",
   "github": "GitHub",
   "github_link": "GitHub",
-  "compatibility.simulation_methods": "Sim Methods"
+  "compatibility.simulation_methods": "Sim Methods",
+  "ai_column": "AI Summaries"
 };
 
 let table;
@@ -425,7 +452,33 @@ async function loadAllMetadata() {
     .map(item => item.path)
     .sort();
 
-  const yamlPaths = allPaths.filter(isYamlPath);
+  const allYamlPaths = allPaths.filter(isYamlPath);
+
+  const yamlPaths = [];
+  const folders = new Map();
+
+  for (const path of allYamlPaths) {
+    const slash = path.lastIndexOf("/");
+    const folder = slash === -1 ? "" : path.substring(0, slash);
+
+  if (!folders.has(folder)) {
+    folders.set(folder, []);
+  }
+  folders.get(folder).push(path);
+}
+
+  for (const paths of folders.values()) {
+   const namedMetadata = paths.find(p => /_metadata\.ya?ml$/i.test(p));
+
+  if (namedMetadata) {
+    yamlPaths.push(namedMetadata);
+  } else {
+    const metadata = paths.find(p => /\/metadata\.ya?ml$/i.test(p));
+    if (metadata) {
+      yamlPaths.push(metadata);
+    }
+  }
+}
   const bnglPaths = allPaths.filter(isBnglPath);
 
   statusEl.textContent =
@@ -449,6 +502,7 @@ async function loadAllMetadata() {
     "description",
     "tools",
     "simulate_tools",
+    "ai_column",
     "citation.year",
     "citation.pmid",
     "citation.doi",
@@ -479,6 +533,26 @@ async function loadAllMetadata() {
     "playground.gallery_categories",
     "playground.featured",
     "raw",
+    "features.uses_trash_molecules",
+    "Features.uses_trash_molecules",
+    "Features.uses_exclude_include_reactants",
+    "features.uses_exclude_include_reactants",
+    "Features.uses_energy",
+    "Features.uses_functions",
+    "features.uses_multiple_identical_sites",
+    "Features.uses_multiple_identical_sites",
+    "features.uses_anchors",
+    "Features.uses_anchors",
+    "features.uses_generate_network",
+    "Features.uses_generate_network",
+    "features.uses_moveconnected",
+    "Features.uses_moveconnected",
+    "features.uses_deletes_molecules",
+    "Features.uses_deletes_molecules",
+    "compatibility.vcell_compatible",
+    "compatibility.molclustpy_compatible",
+    "Features.default_sim_command",
+    "Features.uses_totalrate",
     "parse_error"
   ];
 
@@ -490,7 +564,8 @@ async function loadAllMetadata() {
         column === "source.origin" ||
         column === "tools" ||
         column === "simulate_tools" ||
-        column === "github_link"
+        column === "github_link" ||
+        column === "ai_column"
       ) &&
       !HIDDEN_COLUMN_CHECKBOXES.has(column)
     ),
@@ -599,7 +674,16 @@ if (column === "description") {
       const vcellcompartmentsIcon = isTruthyYamlValue(row["features.uses_vcell_compartments"] ?? row["compatibility.uses_vcell_compartments"])
         ? ` <img src="icons/vcell-compartments.svg" width="28" alt="VCell Compartments" title="Uses VCell Compartments">` : "";
 
-      const featureIcons = `${energyIcon}${functionIcon}${trashIcon}${vcellcompartmentsIcon}`;
+      const includeExcludeReactantsIcon = isTruthyYamlValue(row["features.uses_exclude_include_reactants"] ?? row["compatibility.uses_exclude_include_reactants"])
+        ? ` <img src="icons/include_exclude_reactants.svg" width="28" alt="Exclude/Include Reactants" title="Uses Exclude/Include Reactants">` : "";
+
+      const multipleIdenticalSitesIcon = isTruthyYamlValue(row["features.uses_multiple_identical_sites"] ?? row["compatibility.uses_multiple_identical_sites"])
+        ? ` <img src="icons/multiple_sites.svg" width="28" alt="Multiple Identical Sites" title="Uses Multiple Identical Sites">` : "";
+     
+      const anchorsIcon = isTruthyYamlValue(row["features.uses_anchors"] ?? row["compatibility.uses_anchors"])
+        ? ` <img src="icons/anchor.svg" width="28" alt="Anchors" title="Uses Anchors">` : "";
+
+        const featureIcons = `${energyIcon}${functionIcon}${trashIcon}${vcellcompartmentsIcon}${includeExcludeReactantsIcon}${multipleIdenticalSitesIcon}${anchorsIcon}`;
 
       const githubLink = row.path 
         ? ` <a href="${escapeHtml(GITHUB_TREE_BASE + dirname(row.path))}" target="_blank" rel="noopener" style="margin-left: 8px; font-weight: 600;">GitHub</a>` : "";
@@ -649,8 +733,19 @@ if (column === "simulate_tools") {
                     <img src="icons/vcell.svg" alt="VCell" width="44" height="44" style="vertical-align: middle;">
                   </a>`;
 
-    return `<div style="display: flex; gap: 14px; align-items: center;">${iconsHtml}</div>`;
+    return `<div style="display: flex; gap: 14px; align-items: center; padding-right: 25px;">${iconsHtml}</div>`;
   }
+
+  if (column.key === "ai") {
+    return `
+      <a href="#" title="Long AI Summary">
+        <img src="icons/long_AI.svg" alt="Long AI Summary" width="44" height="44" style="vertical-align: middle;">
+      </a>
+      <a href="#" title="Brief Biology Summary">
+        <img src="icons/brief_AI.svg" alt="Brief Biology Summary" width="44" height="44" style="vertical-align: middle;">
+      </a>
+    `;
+}
 
   if (column === "name") {
     const difficulty = getRowDifficulty(row);
@@ -1098,6 +1193,18 @@ if (downloadBtn) {
   document.getElementById("restoreDefaults").addEventListener("click", () => {
 
     searchEl.value = "";
+
+    expandAllBtn.addEventListener("click", () => {
+  document.querySelectorAll(".filter-panel").forEach(panel => {
+    panel.open = true;
+  });
+});
+
+collapseAllBtn.addEventListener("click", () => {
+  document.querySelectorAll(".filter-panel").forEach(panel => {
+    panel.open = false;
+  });
+});
 
   document.querySelectorAll(".difficulty-checkbox")
     .forEach(cb => cb.checked = true);
