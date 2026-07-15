@@ -350,10 +350,22 @@ function makeBnglItems(yamlPath, bnglPaths) {
   });
 }
 
-async function loadYamlFile(path, bnglPaths) {
+async function loadYamlFile(path, bnglPaths, aiFiles) {
   const rawUrl = RAW_BASE + path;
   const yamlGitHubUrl = GITHUB_BLOB_BASE + path;
   const readmeUrl = GITHUB_BLOB_BASE + dirname(path) + "/README.md";
+  
+  const folder = dirname(path);
+
+const briefAi = aiFiles.find(file =>
+  dirname(file) === folder &&
+  file.endsWith("_aigenerated.md")
+);
+
+const longAi = aiFiles.find(file =>
+  dirname(file) === folder &&
+  file.endsWith("_coder.md")
+);
   const bnglItems = makeBnglItems(path, bnglPaths);
 
   try {
@@ -379,22 +391,26 @@ console.log(flat["source.origin"]);
       }];
     }
 
-    return bnglItems.map(item => ({
-      type: typeFromPath(path),
-      file: basename(path),
-      path,
-      yaml_file: basename(path),
-      yaml_path: path,
-      bngl_file: item.label,
-      bngl_path: item.path,
-      github: readmeUrl,
-      github_link: readmeUrl,
-      yaml_github: yamlGitHubUrl,
-      raw: rawUrl,
-      bngl_item: item,
-      tools: item,
-      ...flat
-    }));
+return bnglItems.map(item => ({
+  type: typeFromPath(path),
+  file: basename(path),
+  path,
+  yaml_file: basename(path),
+  yaml_path: path,
+  bngl_file: item.label,
+  bngl_path: item.path,
+  github: readmeUrl,
+  github_link: readmeUrl,
+  yaml_github: yamlGitHubUrl,
+  raw: rawUrl,
+  bngl_item: item,
+  tools: item,
+
+  brief_ai: briefAi ? GITHUB_BLOB_BASE + briefAi : null,
+  long_ai: longAi ? GITHUB_BLOB_BASE + longAi : null,
+
+  ...flat
+}));
   } catch (error) {
     if (bnglItems.length === 0) {
       return [{
@@ -415,24 +431,28 @@ console.log(flat["source.origin"]);
       }];
     }
 
-    return bnglItems.map(item => ({
-      type: typeFromPath(path),
-      file: basename(path),
-      path,
-      yaml_file: basename(path),
-      yaml_path: path,
-      bngl_file: item.label,
-      bngl_path: item.path,
-      github: readmeUrl,
-      github_link: readmeUrl,
-      yaml_github: yamlGitHubUrl,
-      raw: rawUrl,
-      bngl_item: item,
-      bnglviz: item,
-      rules_railroad: item,
-      bngplayground: item,
-      parse_error: error.message
-    }));
+   return bnglItems.map(item => ({
+  type: typeFromPath(path),
+  file: basename(path),
+  path,
+  yaml_file: basename(path),
+  yaml_path: path,
+  bngl_file: item.label,
+  bngl_path: item.path,
+  github: readmeUrl,
+  github_link: readmeUrl,
+  yaml_github: yamlGitHubUrl,
+  raw: rawUrl,
+  bngl_item: item,
+  bnglviz: item,
+  rules_railroad: item,
+  bngplayground: item,
+
+  brief_ai: briefAi ? GITHUB_BLOB_BASE + briefAi : null,
+  long_ai: longAi ? GITHUB_BLOB_BASE + longAi : null,
+
+  parse_error: error.message
+}));
   }
 }
 
@@ -451,6 +471,11 @@ async function loadAllMetadata() {
     .filter(item => item.type === "blob")
     .map(item => item.path)
     .sort();
+
+  const aiFiles = allPaths.filter(path =>
+  path.endsWith("_aigenerated.md") ||
+  path.endsWith("_coder.md")
+);
 
   const allYamlPaths = allPaths.filter(isYamlPath);
 
@@ -485,7 +510,7 @@ async function loadAllMetadata() {
     `Found ${yamlPaths.length} YAML file(s) and ${bnglPaths.length} BNGL file(s). Loading metadata...`;
 
   const rowGroups = await Promise.all(
-    yamlPaths.map(path => loadYamlFile(path, bnglPaths))
+yamlPaths.map(path => loadYamlFile(path, bnglPaths, aiFiles))
   );
 
   rows = rowGroups.flat();
@@ -646,20 +671,14 @@ if (column === "description") {
     if (!value) return "";
 
     if (row.raw) {
-
-      const vcellcompatibilityIcon = isTruthyYamlValue(row["compatibility.vcell_compatible"])
-        ? ` <img src="icons/vcell_compatible.svg" width="28" alt="VCell Compatibility" title="VCell Compatible">` : "";
       
       const nfsimIcon = isTruthyYamlValue(row["compatibility.nfsim_compatible"])
         ? ` <img src="icons/NFsim.svg" width="28" alt="NFsim" title="NFsim Compatible">` : "";
         
       const bng2Icon = isTruthyYamlValue(row["compatibility.bng2_compatible"])
         ? ` <img src="icons/BNG2.svg" width="28" alt="BNG2" title="BNG2 Compatible">` : "";
-        
-      const molclustpyIcon = isTruthyYamlValue(row["compatibility.molclustpy_compatible"])
-        ? ` <img src="icons/MolClustPy.svg" width="28" alt="MolClustPy" title="MolClustPy Compatible">` : "";
-
-      const compatibilityIcons = `${vcellcompatibilityIcon}${nfsimIcon}${bng2Icon}${molclustpyIcon}`;
+  
+      const compatibilityIcons = `${nfsimIcon}${bng2Icon}`;
 
       // 2. FEATURE ICONS (To be placed second)
       const energyIcon = isTruthyYamlValue(row["features.uses_energy"] ?? row["compatibility.uses_energy"])
@@ -701,50 +720,92 @@ if (column === "tools") {
     if (!value) return "";
 
     let iconsHtml = "";
-    // BNGViz and RRR icons
+
     iconsHtml += renderSingleViewLink(value, "bnglVizUrl", "icons/bngl.svg", "bnglViz");
     iconsHtml += renderSingleViewLink(value, "rulesRailRoadUrl", "icons/RR.svg", "RulesRailRoad");
     
-    // MPD static text link
     iconsHtml += `<a href="https://github.com/vcellmike/MolecularProcessDiagram" target="_blank" rel="noopener" title="Molecular Process Diagram" style="font-weight: bold; text-decoration: none; padding-left: 5px;">MPD</a>`;
 
     return `<div style="display: flex; gap: 14px; align-items: center; padding-right: 25px;">${iconsHtml}</div>`;
   }
 
 if (column === "simulate_tools") {
-    // Because this column isn't in your YAML, 'value' is undefined. 
-    // We pull the item links from row.tools instead!
-    const item = row.tools; 
-    
+    const item = row.tools;
+
     let iconsHtml = "";
-    
-    // BNGPlayground icon (Dynamic based on row)
+
     if (item) {
-      iconsHtml += renderSingleViewLink(item, "bngPlaygroundUrl", "icons/BNGPlayground.svg", "bngPlayground");
+      iconsHtml += renderSingleViewLink(
+        item,
+        "bngPlaygroundUrl",
+        "icons/BNGPlayground.svg",
+        "bngPlayground"
+      );
     }
-    
-    // MCP static icon link
-    iconsHtml += `<a href="https://molclustpy.github.io/" target="_blank" rel="noopener" title="MolClustPy">
-                    <img src="icons/molclustpy.svg" alt="MCP" width="44" height="44" style="vertical-align: middle;">
-                  </a>`;
-                  
-    // VCell static icon link
-    iconsHtml += `<a href="http://vcell.org" target="_blank" rel="noopener" title="VCell">
-                    <img src="icons/vcell.svg" alt="VCell" width="44" height="44" style="vertical-align: middle;">
-                  </a>`;
 
-    return `<div style="display: flex; gap: 14px; align-items: center; padding-right: 25px;">${iconsHtml}</div>`;
-  }
+    if (isTruthyYamlValue(row["compatibility.molclustpy_compatible"])) {
+      iconsHtml += `
+        <a href="https://molclustpy.github.io/"
+           target="_blank"
+           rel="noopener"
+           title="MolClustPy">
+          <img src="icons/Molclustpy.svg"
+               alt="MCP"
+               width="44"
+               height="44"
+               style="vertical-align: middle;">
+        </a>`;
+    }
 
-  if (column.key === "ai") {
-    return `
-      <a href="#" title="Long AI Summary">
-        <img src="icons/long_AI.svg" alt="Long AI Summary" width="44" height="44" style="vertical-align: middle;">
-      </a>
-      <a href="#" title="Brief Biology Summary">
-        <img src="icons/brief_AI.svg" alt="Brief Biology Summary" width="44" height="44" style="vertical-align: middle;">
-      </a>
-    `;
+    if (isTruthyYamlValue(row["compatibility.vcell_compatible"])) {
+      iconsHtml += `
+        <a href="http://vcell.org"
+           target="_blank"
+           rel="noopener"
+           title="VCell">
+          <img src="icons/vcell.svg"
+               alt="VCell"
+               width="44"
+               height="44"
+               style="vertical-align: middle;">
+        </a>`;
+    }
+
+    return `<div style="display:flex; gap:14px; align-items:center; padding-right:25px;">
+              ${iconsHtml}
+            </div>`;
+}
+
+if (column === "ai_column") {
+    let html = "";
+
+    if (row.brief_ai) {
+        html += `
+        <a href="${escapeHtml(row.brief_ai)}"
+           target="_blank"
+           rel="noopener"
+           title="Brief Biology Summary">
+            <img src="icons/brief_AI.svg"
+                 alt="Brief Biology Summary"
+                 width="44"
+                 height="44">
+        </a>`;
+    }
+
+    if (row.long_ai) {
+        html += `
+        <a href="${escapeHtml(row.long_ai)}"
+           target="_blank"
+           rel="noopener"
+           title="Detailed Coder Summary">
+            <img src="icons/long_AI.svg"
+                 alt="Detailed Coder Summary"
+                 width="44"
+                 height="44">
+        </a>`;
+    }
+
+    return html;
 }
 
   if (column === "name") {
