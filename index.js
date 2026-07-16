@@ -109,6 +109,15 @@ const HIDDEN_COLUMN_CHECKBOXES = new Set([
   "compatibility.molclustpy_compatible",
   "Features.default_sim_command",
   "Features.uses_totalrate",
+  "Features.uses_compartments",
+  "brief_ai",
+  "compatibility.bnglviz_compatible",
+  "compatibility.bngp_compatible",
+  "compatibility.rr_compatible",
+  "compatibility.vcell_errors",
+  "features.default_sim_command",
+  "features.uses_totalrate",
+  "long_ai",
   ...FEATURE_FILTER_COLUMNS,
   ...COMMENTED_OUT_COLUMN_CHECKBOXES
 ]);
@@ -578,6 +587,15 @@ yamlPaths.map(path => loadYamlFile(path, bnglPaths, aiFiles))
     "compatibility.molclustpy_compatible",
     "Features.default_sim_command",
     "Features.uses_totalrate",
+    "Features.uses_compartments",
+    "brief_ai",
+    "compatibility.bnglviz_compatible",
+    "compatibility.bngp_compatible",
+    "compatibility.rr_compatible",
+    "compatibility.vcell_errors",
+    "features.default_sim_command",
+    "features.uses_totalrate",
+    "long_ai",
     "parse_error"
   ];
 
@@ -643,7 +661,7 @@ function renderSingleViewLink(item, urlKey, iconSrc, altText) {
   if (!item || !item[urlKey]) return "";
 
   return `<a href="${escapeHtml(item[urlKey])}" target="_blank" rel="noopener" title="${escapeHtml(item.label)}">
-            <img src="${iconSrc}" alt="${altText}" width="44" height="44" style="vertical-align: middle;">
+            <img src="${iconSrc}" alt="${altText}" width="30" height="30" style="vertical-align: middle;">
           </a>`;
 }
 
@@ -673,34 +691,37 @@ if (column === "description") {
     if (row.raw) {
       
       const nfsimIcon = isTruthyYamlValue(row["compatibility.nfsim_compatible"])
-        ? ` <img src="icons/NFsim.svg" width="28" alt="NFsim" title="NFsim Compatible">` : "";
+        ? ` <img src="icons/NFsim.svg" width="25" alt="NFsim" title="NFsim Compatible">` : "";
         
       const bng2Icon = isTruthyYamlValue(row["compatibility.bng2_compatible"])
-        ? ` <img src="icons/BNG2.svg" width="28" alt="BNG2" title="BNG2 Compatible">` : "";
+        ? ` <img src="icons/BNG2.svg" width="25" alt="BNG2" title="BNG2 Compatible">` : "";
   
       const compatibilityIcons = `${nfsimIcon}${bng2Icon}`;
 
       // 2. FEATURE ICONS (To be placed second)
       const energyIcon = isTruthyYamlValue(row["features.uses_energy"] ?? row["compatibility.uses_energy"])
-        ? ` <img src="icons/einstein-equation.svg" width="28" alt="Energy" title="Uses Energy">` : "";
+        ? ` <img src="icons/einstein-equation.svg" width="25" alt="Energy" title="Uses Energy">` : "";
 
       const trashIcon = isTruthyYamlValue(row["features.uses_trash_molecules"] ?? row["compatibility.uses_trash_molecules"])
-        ? ` <img src="icons/trash1.svg" width="28" alt="Trash Molecules" title="Uses Trash Molecules">` : "";
+        ? ` <img src="icons/trash1.svg" width="25" alt="Trash Molecules" title="Uses Trash Molecules">` : "";
 
       const functionIcon = isTruthyYamlValue(row["features.uses_functions"] ?? row["compatibility.uses_functions"])
-        ? ` <img src="icons/functions.svg" width="28" alt="Functions" title="Uses Functions">` : "";
+        ? ` <img src="icons/functions.svg" width="25" alt="Functions" title="Uses Functions">` : "";
 
       const vcellcompartmentsIcon = isTruthyYamlValue(row["features.uses_vcell_compartments"] ?? row["compatibility.uses_vcell_compartments"])
-        ? ` <img src="icons/vcell-compartments.svg" width="28" alt="VCell Compartments" title="Uses VCell Compartments">` : "";
+        ? ` <img src="icons/vcell-compartments.svg" width="25" alt="VCell Compartments" title="Uses VCell Compartments">` : "";
 
       const includeExcludeReactantsIcon = isTruthyYamlValue(row["features.uses_exclude_include_reactants"] ?? row["compatibility.uses_exclude_include_reactants"])
-        ? ` <img src="icons/include_exclude_reactants.svg" width="28" alt="Exclude/Include Reactants" title="Uses Exclude/Include Reactants">` : "";
+        ? ` <img src="icons/include_exclude_reactants.svg" width="25" alt="Exclude/Include Reactants" title="Uses Exclude/Include Reactants">` : "";
 
       const multipleIdenticalSitesIcon = isTruthyYamlValue(row["features.uses_multiple_identical_sites"] ?? row["compatibility.uses_multiple_identical_sites"])
-        ? ` <img src="icons/multiple_sites.svg" width="28" alt="Multiple Identical Sites" title="Uses Multiple Identical Sites">` : "";
+        ? ` <img src="icons/multiple_sites.svg" width="25" alt="Multiple Identical Sites" title="Uses Multiple Identical Sites">` : "";
      
       const anchorsIcon = isTruthyYamlValue(row["features.uses_anchors"] ?? row["compatibility.uses_anchors"])
-        ? ` <img src="icons/anchor.svg" width="28" alt="Anchors" title="Uses Anchors">` : "";
+        ? ` <img src="icons/anchor.svg" width="25" alt="Anchors" title="Uses Anchors">` : "";
+
+      /*const totalrateIcon = isTruthyYamlValue(row["features.uses_totalrate"] ?? row["compatibility.uses_totalrate"])  
+      ? ` <img src="icons/totalrate.svg" width="25" alt="Total Rate" title="Uses Total Rate">` : "";*/
 
         const featureIcons = `${energyIcon}${functionIcon}${trashIcon}${vcellcompartmentsIcon}${includeExcludeReactantsIcon}${multipleIdenticalSitesIcon}${anchorsIcon}`;
 
@@ -708,7 +729,7 @@ if (column === "description") {
         ? ` <a href="${escapeHtml(GITHUB_TREE_BASE + dirname(row.path))}" target="_blank" rel="noopener" style="margin-left: 8px; font-weight: 600;">GitHub</a>` : "";
 
       const yamlLink = row.raw 
-        ? ` <a href="${escapeHtml(row.raw)}" target="_blank" rel="noopener" style="margin-left: 8px; font-weight: 600;">.yaml</a>` : "";
+        ? ` <a href="${escapeHtml(row.raw)}" target="_blank" rel="noopener" style="margin-left: 8px; font-weight: 600;">yaml</a>` : "";
 
         return `<span>${escapeHtml(value)}</span>${compatibilityIcons}${featureIcons}${githubLink}${yamlLink}`;
     }
@@ -723,11 +744,25 @@ if (column === "tools") {
 
     iconsHtml += renderSingleViewLink(value, "bnglVizUrl", "icons/bngl.svg", "bnglViz");
     iconsHtml += renderSingleViewLink(value, "rulesRailRoadUrl", "icons/RR.svg", "RulesRailRoad");
-    
-    iconsHtml += `<a href="https://github.com/vcellmike/MolecularProcessDiagram" target="_blank" rel="noopener" title="Molecular Process Diagram" style="font-weight: bold; text-decoration: none; padding-left: 5px;">MPD</a>`;
 
-    return `<div style="display: flex; gap: 14px; align-items: center; padding-right: 25px;">${iconsHtml}</div>`;
-  }
+   const modelFolder = row.yaml_file
+  .replace(/_metadata\.ya?ml$/i, "")
+  .replace(/\.ya?ml$/i, "");
+    console.log("modelFolder =", modelFolder, "path =", row.path);
+
+    if (isTruthyYamlValue(row["compatibility.mpd_compatible"])) {
+      iconsHtml += `
+        <a href="https://github.com/vcellmike/MolecularProcessDiagram/tree/main/${encodeURIComponent(modelFolder)}"
+           target="_blank"
+           rel="noopener"
+           title="Molecular Process Diagram"
+           style="font-weight: bold; text-decoration: none; padding-left: 5px;">
+          MPD
+        </a>`;
+    }
+
+    return `<div style="display: flex; gap: 14px; align-items: center; padding-right: 18px;">${iconsHtml}</div>`;
+}
 
 if (column === "simulate_tools") {
     const item = row.tools;
@@ -751,8 +786,8 @@ if (column === "simulate_tools") {
            title="MolClustPy">
           <img src="icons/Molclustpy.svg"
                alt="MCP"
-               width="44"
-               height="44"
+               width="30"
+               height="30"
                style="vertical-align: middle;">
         </a>`;
     }
@@ -765,13 +800,13 @@ if (column === "simulate_tools") {
            title="VCell">
           <img src="icons/vcell.svg"
                alt="VCell"
-               width="44"
-               height="44"
+               width="30"
+               height="30"
                style="vertical-align: middle;">
         </a>`;
     }
 
-    return `<div style="display:flex; gap:14px; align-items:center; padding-right:25px;">
+    return `<div style="display:flex; gap:14px; align-items:center; padding-right:18px;">
               ${iconsHtml}
             </div>`;
 }
