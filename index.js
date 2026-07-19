@@ -157,7 +157,8 @@ const COLUMN_LABELS = {
   "github": "GitHub",
   "github_link": "GitHub",
   "compatibility.simulation_methods": "Sim Methods",
-  "ai_column": "AI Summaries"
+  "ai_column": "AI Summaries",
+  "citation.reference": "Reference"
 };
 
 let table;
@@ -175,7 +176,7 @@ let lastPageBtn;
 let rows = [];
 let columns = [];
 let visibleColumns = new Set(DEFAULT_VISIBLE_COLUMNS);
-let sortState = { column: null, direction: 1 };
+let sortState = { column: "citation.year", direction: -1 };
 let currentPage = 1;
 
 function pathRoot(path) {
@@ -533,12 +534,13 @@ yamlPaths.map(path => loadYamlFile(path, bnglPaths, aiFiles))
   const preferred = [
     "source.origin",
     "name",
+    "citation.year",
+    "citation.pmid",
+    "citation.reference",
     "description",
     "tools",
     "simulate_tools",
     "ai_column",
-    "citation.year",
-    "citation.pmid",
     "citation.doi",
     "github_link",
     "bngl_item",
@@ -552,7 +554,6 @@ yamlPaths.map(path => loadYamlFile(path, bnglPaths, aiFiles))
     "id",
     "authors",
     "contributors",
-    "citation.reference",
     "date.created",
     "date.modified",
     "tags",
@@ -750,16 +751,15 @@ if (column === "tools") {
   .replace(/\.ya?ml$/i, "");
     console.log("modelFolder =", modelFolder, "path =", row.path);
 
-    if (isTruthyYamlValue(row["compatibility.mpd_compatible"])) {
-      iconsHtml += `
-        <a href="https://github.com/vcellmike/MolecularProcessDiagram/tree/main/${encodeURIComponent(modelFolder)}"
-           target="_blank"
-           rel="noopener"
-           title="Molecular Process Diagram"
-           style="font-weight: bold; text-decoration: none; padding-left: 5px;">
-          MPD
-        </a>`;
-    }
+if (isTruthyYamlValue(row["compatibility.mpd_compatible"])) {
+  iconsHtml += `
+    <a href="https://github.com/vcellmike/MolecularProcessDiagram/tree/main/${encodeURIComponent(modelFolder)}"
+       target="_blank"
+       rel="noopener"
+       title="Molecular Process Diagram">
+      <img src="icons/mpd.png" alt="MPD" width="24">
+    </a>`;
+}
 
     return `<div style="display: flex; gap: 14px; align-items: center; padding-right: 18px;">${iconsHtml}</div>`;
 }
@@ -822,8 +822,8 @@ if (column === "ai_column") {
            title="Brief Biology Summary">
             <img src="icons/brief_AI.svg"
                  alt="Brief Biology Summary"
-                 width="44"
-                 height="44">
+                 width="30"
+                 height="30">
         </a>`;
     }
 
@@ -835,8 +835,8 @@ if (column === "ai_column") {
            title="Detailed Coder Summary">
             <img src="icons/long_AI.svg"
                  alt="Detailed Coder Summary"
-                 width="44"
-                 height="44">
+                 width="30"
+                 height="30">
         </a>`;
     }
 
@@ -869,6 +869,20 @@ if (column === "ai_column") {
       </span>
     `;
   }
+
+  if (column === "citation.pmid") {
+  if (!value) return "";
+
+  const pmid = String(value).trim();
+
+  return `
+    <a href="https://pubmed.ncbi.nlm.nih.gov/${encodeURIComponent(pmid)}/"
+       target="_blank"
+       rel="noopener">
+      PMID:${escapeHtml(pmid)}
+    </a>
+  `;
+}
 
   return escapeHtml(value);
 
@@ -976,15 +990,31 @@ function getFilteredSortedRows() {
     const column = sortState.column;
     const direction = sortState.direction;
 
-    filteredRows = [...filteredRows].sort((a, b) => {
-      const av = valueForSort(a, column);
-      const bv = valueForSort(b, column);
+filteredRows = [...filteredRows].sort((a, b) => {
+  if (column === "citation.year") {
+    const ay = parseInt(a["citation.year"], 10);
+    const by = parseInt(b["citation.year"], 10);
 
-      return av.localeCompare(bv, undefined, {
-        numeric: true,
-        sensitivity: "base"
-      }) * direction;
-    });
+    const aMissing = isNaN(ay);
+    const bMissing = isNaN(by);
+
+    if (aMissing && bMissing) return 0;
+    if (aMissing) return 1;
+    if (bMissing) return -1;
+
+    return direction === 1
+      ? ay - by
+      : by - ay;
+  }
+
+  const av = valueForSort(a, column);
+  const bv = valueForSort(b, column);
+
+  return av.localeCompare(bv, undefined, {
+    numeric: true,
+    sensitivity: "base"
+  }) * direction;
+});
   }
 
   return filteredRows;
