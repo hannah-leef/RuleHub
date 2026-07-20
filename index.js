@@ -36,6 +36,9 @@ const collapseAllBtn = document.getElementById("collapse-all");
 const DEFAULT_VISIBLE_COLUMNS = [
   "source.origin",
   "name",
+  "citation.year",
+  "citation.pmid",
+  "citation.reference",
   "description",
   "tools",
   "simulate_tools",
@@ -118,6 +121,7 @@ const HIDDEN_COLUMN_CHECKBOXES = new Set([
   "features.default_sim_command",
   "features.uses_totalrate",
   "long_ai",
+  "compatibility.mpd_compatible",
   ...FEATURE_FILTER_COLUMNS,
   ...COMMENTED_OUT_COLUMN_CHECKBOXES
 ]);
@@ -158,7 +162,8 @@ const COLUMN_LABELS = {
   "github_link": "GitHub",
   "compatibility.simulation_methods": "Sim Methods",
   "ai_column": "AI Summaries",
-  "citation.reference": "Reference"
+  "citation.reference": "Reference",
+  "compatibility.comments": "Compatibility Comments"
 };
 
 let table;
@@ -597,6 +602,8 @@ yamlPaths.map(path => loadYamlFile(path, bnglPaths, aiFiles))
     "features.default_sim_command",
     "features.uses_totalrate",
     "long_ai",
+    "compatibility.mpd_compatible",
+    "compatibility.comments",
     "parse_error"
   ];
 
@@ -1076,12 +1083,16 @@ function renderTable() {
                 </span>
               </th>
             `;
-          }
+          }          
 
           const isActive = sortState.column === column;
+          const isNumericColumn = column === "citation.year";
+
           const icon = isActive
-            ? sortState.direction === 1 ? "A→Z" : "Z→A"
-            : "↕";
+              ? isNumericColumn
+              ? (sortState.direction === 1 ? "0→9" : "9→0")
+              : (sortState.direction === 1 ? "A→Z" : "Z→A")
+              : "↕";
 
           const title = isActive
             ? sortState.direction === 1

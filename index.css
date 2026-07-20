@@ -409,8 +409,7 @@ button {
 
 table {
   border-collapse: collapse;
-  width: 100%;
-  min-width: 900px;
+  width: auto;
   font-size: 0.87rem;
 }
 
