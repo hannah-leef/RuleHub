@@ -318,6 +318,17 @@ function getSelectedFeatureFilters() {
     .map(input => input.value);
 }
 
+function rowMatchesCollections(row) {
+  const showCollections =
+    document.getElementById("showCollections").checked;
+
+  if (showCollections) {
+    return true;
+  }
+
+  return String(row["collection.parent_model"] ?? "").trim() === "";
+}
+
 function isTruthyYamlValue(value) {
   const text = String(value ?? "").trim().toLowerCase();
   return text === "true" || text === "yes" || text === "1";
@@ -990,6 +1001,7 @@ function getFilteredSortedRows() {
     .filter(row => rowMatchesSearch(row, query))
     .filter(row => rowMatchesDifficulty(row))
     .filter(row => rowMatchesType(row))
+    .filter(row => rowMatchesCollections(row))
     .filter(row => rowMatchesFeatureFilters(row))
     .filter(row => rowMatchesSimulationFilters(row));
 
@@ -1085,14 +1097,11 @@ function renderTable() {
             `;
           }          
 
-          const isActive = sortState.column === column;
-          const isNumericColumn = column === "citation.year";
+         const isActive = sortState.column === column;
 
-          const icon = isActive
-              ? isNumericColumn
-              ? (sortState.direction === 1 ? "0→9" : "9→0")
-              : (sortState.direction === 1 ? "A→Z" : "Z→A")
-              : "↕";
+        const icon = isActive
+          ? (sortState.direction === 1 ? "↑" : "↓")
+            : "↕";
 
           const title = isActive
             ? sortState.direction === 1
@@ -1327,46 +1336,44 @@ if (downloadBtn) {
     updateStatus();
   });
 
-  document.getElementById("restoreDefaults").addEventListener("click", () => {
-
-    searchEl.value = "";
-
-    expandAllBtn.addEventListener("click", () => {
-  document.querySelectorAll(".filter-panel").forEach(panel => {
-    panel.open = true;
-  });
+  expandAllBtn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-panel").forEach(panel => {
+        panel.open = true;
+    });
 });
 
 collapseAllBtn.addEventListener("click", () => {
-  document.querySelectorAll(".filter-panel").forEach(panel => {
-    panel.open = false;
-  });
+    document.querySelectorAll(".filter-panel").forEach(panel => {
+        panel.open = false;
+    });
 });
 
-  document.querySelectorAll(".difficulty-checkbox")
-    .forEach(cb => cb.checked = true);
+document.getElementById("restoreDefaults").addEventListener("click", () => {
 
-// Source
-  document.querySelectorAll(".type-checkbox")
-    .forEach(cb => cb.checked = true);
+    searchEl.value = "";
 
-// Everything else
-  document.querySelectorAll(".feature-checkbox, .simulation-checkbox")
-    .forEach(cb => cb.checked = false);
-  
-  visibleColumns = new Set(
-    DEFAULT_VISIBLE_COLUMNS.filter(column => columns.includes(column))
-  );
-  renderColumnCheckboxes();
+    document.querySelectorAll(".difficulty-checkbox")
+        .forEach(cb => cb.checked = true);
 
-  sortState = { column: null, direction: 1 };
+    document.querySelectorAll(".type-checkbox")
+        .forEach(cb => cb.checked = true);
 
-  currentPage = 1;
+    document.getElementById("showCollections").checked = false;
 
-  renderTable();
-  updateStatus();
+    document.querySelectorAll(".feature-checkbox, .simulation-checkbox")
+        .forEach(cb => cb.checked = false);
 
-  pageSizeEl.value = "50";
+    visibleColumns = new Set(
+        DEFAULT_VISIBLE_COLUMNS.filter(column => columns.includes(column))
+    );
+    renderColumnCheckboxes();
+
+    sortState = { column: "citation.year", direction: -1 };
+    currentPage = 1;
+    pageSizeEl.value = "50";
+
+    renderTable();
+    updateStatus();
 });
 
   document.getElementById("showAll").addEventListener("click", () => {
@@ -1403,6 +1410,11 @@ collapseAllBtn.addEventListener("click", () => {
       renderTable();
     });
   });
+
+  document.getElementById("showCollections").addEventListener("change", () => {
+    currentPage = 1;
+    renderTable();
+});
 
   document.querySelectorAll(".feature-checkbox").forEach(input => {
     input.addEventListener("change", () => {
