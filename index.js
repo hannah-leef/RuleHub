@@ -36,6 +36,9 @@ const collapseAllBtn = document.getElementById("collapse-all");
 const DEFAULT_VISIBLE_COLUMNS = [
   "source.origin",
   "name",
+  "citation.year",
+  "citation.pmid",
+  "citation.reference",
   "description",
   "tools",
   "simulate_tools",
@@ -118,6 +121,7 @@ const HIDDEN_COLUMN_CHECKBOXES = new Set([
   "features.default_sim_command",
   "features.uses_totalrate",
   "long_ai",
+  "compatibility.mpd_compatible",
   ...FEATURE_FILTER_COLUMNS,
   ...COMMENTED_OUT_COLUMN_CHECKBOXES
 ]);
@@ -158,7 +162,8 @@ const COLUMN_LABELS = {
   "github_link": "GitHub",
   "compatibility.simulation_methods": "Sim Methods",
   "ai_column": "AI Summaries",
-  "citation.reference": "Reference"
+  "citation.reference": "Reference",
+  "compatibility.comments": "Compatibility Comments"
 };
 
 let table;
@@ -311,6 +316,17 @@ function rowMatchesType(row) {
 function getSelectedFeatureFilters() {
   return [...document.querySelectorAll(".feature-checkbox:checked")]
     .map(input => input.value);
+}
+
+function rowMatchesCollections(row) {
+  const showCollections =
+    document.getElementById("showCollections").checked;
+
+  if (showCollections) {
+    return true;
+  }
+
+  return String(row["collection.parent_model"] ?? "").trim() === "";
 }
 
 function isTruthyYamlValue(value) {
@@ -597,6 +613,8 @@ yamlPaths.map(path => loadYamlFile(path, bnglPaths, aiFiles))
     "features.default_sim_command",
     "features.uses_totalrate",
     "long_ai",
+    "compatibility.mpd_compatible",
+    "compatibility.comments",
     "parse_error"
   ];
 
@@ -983,6 +1001,7 @@ function getFilteredSortedRows() {
     .filter(row => rowMatchesSearch(row, query))
     .filter(row => rowMatchesDifficulty(row))
     .filter(row => rowMatchesType(row))
+    .filter(row => rowMatchesCollections(row))
     .filter(row => rowMatchesFeatureFilters(row))
     .filter(row => rowMatchesSimulationFilters(row));
 
@@ -1076,11 +1095,12 @@ function renderTable() {
                 </span>
               </th>
             `;
-          }
+          }          
 
-          const isActive = sortState.column === column;
-          const icon = isActive
-            ? sortState.direction === 1 ? "A→Z" : "Z→A"
+         const isActive = sortState.column === column;
+
+        const icon = isActive
+          ? (sortState.direction === 1 ? "↑" : "↓")
             : "↕";
 
           const title = isActive
@@ -1316,46 +1336,44 @@ if (downloadBtn) {
     updateStatus();
   });
 
-  document.getElementById("restoreDefaults").addEventListener("click", () => {
-
-    searchEl.value = "";
-
-    expandAllBtn.addEventListener("click", () => {
-  document.querySelectorAll(".filter-panel").forEach(panel => {
-    panel.open = true;
-  });
+  expandAllBtn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-panel").forEach(panel => {
+        panel.open = true;
+    });
 });
 
 collapseAllBtn.addEventListener("click", () => {
-  document.querySelectorAll(".filter-panel").forEach(panel => {
-    panel.open = false;
-  });
+    document.querySelectorAll(".filter-panel").forEach(panel => {
+        panel.open = false;
+    });
 });
 
-  document.querySelectorAll(".difficulty-checkbox")
-    .forEach(cb => cb.checked = true);
+document.getElementById("restoreDefaults").addEventListener("click", () => {
 
-// Source
-  document.querySelectorAll(".type-checkbox")
-    .forEach(cb => cb.checked = true);
+    searchEl.value = "";
 
-// Everything else
-  document.querySelectorAll(".feature-checkbox, .simulation-checkbox")
-    .forEach(cb => cb.checked = false);
-  
-  visibleColumns = new Set(
-    DEFAULT_VISIBLE_COLUMNS.filter(column => columns.includes(column))
-  );
-  renderColumnCheckboxes();
+    document.querySelectorAll(".difficulty-checkbox")
+        .forEach(cb => cb.checked = true);
 
-  sortState = { column: null, direction: 1 };
+    document.querySelectorAll(".type-checkbox")
+        .forEach(cb => cb.checked = true);
 
-  currentPage = 1;
+    document.getElementById("showCollections").checked = false;
 
-  renderTable();
-  updateStatus();
+    document.querySelectorAll(".feature-checkbox, .simulation-checkbox")
+        .forEach(cb => cb.checked = false);
 
-  pageSizeEl.value = "50";
+    visibleColumns = new Set(
+        DEFAULT_VISIBLE_COLUMNS.filter(column => columns.includes(column))
+    );
+    renderColumnCheckboxes();
+
+    sortState = { column: "citation.year", direction: -1 };
+    currentPage = 1;
+    pageSizeEl.value = "50";
+
+    renderTable();
+    updateStatus();
 });
 
   document.getElementById("showAll").addEventListener("click", () => {
@@ -1392,6 +1410,11 @@ collapseAllBtn.addEventListener("click", () => {
       renderTable();
     });
   });
+
+  document.getElementById("showCollections").addEventListener("change", () => {
+    currentPage = 1;
+    renderTable();
+});
 
   document.querySelectorAll(".feature-checkbox").forEach(input => {
     input.addEventListener("change", () => {
