@@ -18,7 +18,7 @@
   <h2>World of Rule-Based Models</h2>
 
   <nav class="main-nav">
-    <a href="index2.html" class="active"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+    <a href="index.html" class="active"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
 <path d="M 12 2.0996094 L 1 12 L 4 12 L 4 21 L 11 21 L 11 15 L 13 15 L 13 21 L 20 21 L 20 12 L 23 12 L 12 2.0996094 z M 12 4.7910156 L 18 10.191406 L 18 11 L 18 19 L 15 19 L 15 13 L 9 13 L 9 19 L 6 19 L 6 10.191406 L 12 4.7910156 z"></path>
 </svg>Models</a>
     <a href="description.html">Rule-Based Modeling</a>
@@ -34,12 +34,12 @@
   <div class="hero-left">
     
     <h3 id="modelCount" class="stat total-stat" style="
-        margin-bottom: 5px;
-        margin-top: 10px;
-        padding-bottom: 5px;
-        padding-top: 5px;
-        padding-right: 10px;
-        padding-left: 10px;
+        margin-bottom: 3px;
+        margin-top: 8px;
+        padding-bottom: 3px;
+        padding-top: 3px;
+        padding-right: 8px;
+        padding-left: 8px;
         font-weight: 600;
     "></h3>
   
@@ -49,28 +49,34 @@
 
  <div class="hero-right">
 
-  <div class="search-controls">
-    <input     id="search"
+<div class="search-controls">
+
+  <input
+    id="search"
     type="search"
     placeholder="🔍 Search models..."
     aria-label="Search models"
   />
-  <button id="restoreDefaults" class="small-button">
-      Restore Default
-  </button>
 
-<button id="expand-all" class="small-button">
-  Expand All
-</button>
+<div class="controls-box">
+    <span class="controls-title">Controls</span>
 
-<button id="collapse-all" class="small-button">
-  Collapse All
-</button>
+    <button id="restoreDefaults" class="small-button">
+        Restore Default
+    </button>
+
+    <button id="expand-all" class="small-button">
+        Expand All
+    </button>
+
+    <button id="collapse-all" class="small-button">
+        Collapse All
+    </button>
+</div>
 
 </div>
 
-
-</div>
+  </div>
 
 </section>
 
@@ -121,12 +127,13 @@
   <div class="filter-group">
     <label><input type="checkbox" class="feature-checkbox" value="compatibility.bng2_compatible"> BNG2 <img src="icons/BNG2.svg" width="20"></label>
     <label><input type="checkbox" class="feature-checkbox" value="compatibility.nfsim_compatible"> NFsim <img src="icons/NFsim.svg" width="20"></label>
-    <label><input type="checkbox" class="feature-checkbox" value="compatibility.vcell_compatible"> VCell <img src="icons/vcell_compatible.svg" width="20"></label>
+    <label><input type="checkbox" class="feature-checkbox" value="compatibility.vcell_compatible"> VCell <img src="icons/vcell.svg" width="20"></label>
     <label><input type="checkbox" class="feature-checkbox" value="compatibility.molclustpy_compatible"> MolClustPy <img src="icons/Molclustpy.svg" width="20"></label>
+    <label><input type="checkbox" class="feature-checkbox" value="compatibility.mpd_compatible"> MPD <img src="icons/mpd.png" width="20"></input></label>
   </div>
 </details>
 
- <details class="filter-panel small-filter" closed>
+<!--<details class="filter-panel small-filter" closed>
   <summary><h2>Filter By Simulation</h2></summary>
 
   <div class="filter-group">
@@ -138,10 +145,9 @@
     <label><input type="checkbox" class="simulation-checkbox" value="molclustpy"> MolClustPy</label>
     <label><input type="checkbox" class="simulation-checkbox" value="vcell"> VCell</label>
   </div>
-</details>
-</div>
+</details>-->
 
-<details class="filter-panel" closed>
+<details class="filter-panel small-filter" closed>
   <summary><h2>Filter By Features</h2></summary>
 
   <div class="filter-group">
@@ -207,12 +213,20 @@
       <input type="checkbox" class="feature-checkbox" value="compatibility.uses_generate_network">
       Generate Network
     </label>
+
+    <label>
+      <input type="checkbox" class="feature-checkbox" value="features.uses_totalrate">
+      Total Rate
+    </label>
   </div>
 </details>
 
-  <section class="column-panel">
+</div>
+
+  <details class="filter-panel" closed>
+  <summary><h2>Select Columns</h2></summary>
+
     <div class="column-header">
-      <h2>Columns</h2>
 
       <div class="column-actions">
         <button id="showDefault" class="small-button">Default columns</button>
@@ -252,7 +266,7 @@
     -->
 
     <div id="columnCheckboxes" class="checkbox-grid"></div>
-  </section>
+  </details>
 
   <div class="table-wrap">
     <table id="metadataTable"></table>
