@@ -372,8 +372,10 @@ function makeBnglItems(yamlPath, bnglPaths) {
     item.rulesRailRoadUrl = makeRulesRailRoadUrl(item);
     item.bngPlaygroundUrl = makeBngPlaygroundUrl(item);
 
+    console.log("BNGL ITEM CREATED:", item);
+
     return item;
-  });
+});
 }
 
 async function loadYamlFile(path, bnglPaths, aiFiles) {
@@ -394,10 +396,37 @@ const longAi = aiFiles.find(file =>
 );
   const bnglItems = makeBnglItems(path, bnglPaths);
 
-  try {
+console.log(
+  "Matches:",
+  path,
+  bnglItems.map(b => b.path)
+);
+
+console.log("YAML:", path);
+console.log("BNGL items:", bnglItems);
+
+try {
     const text = await fetchText(rawUrl);
-    const parsed = jsyaml.load(text) || {};
+
+    let parsed;
+
+    try {
+      parsed = jsyaml.load(text) || {};
+    } catch (yamlError) {
+      console.warn("YAML parse failed, trying fallback:", path, yamlError);
+
+    const fixedText = text.replace(
+      /^description:\s*(.*(?:\n(?!\w[\w.]*:).*)*)/m,
+      (_, value) => {
+        return `description: "${value.replace(/\n/g, " ").replace(/"/g, '\\"').trim()}"`
+      }
+    );
+
+      parsed = jsyaml.load(fixedText) || {};
+    }
+
     const flat = flattenObject(parsed);
+    
     console.log(flat);
 console.log(flat["source.origin"]);
     if (bnglItems.length === 0) {
@@ -419,9 +448,9 @@ console.log(flat["source.origin"]);
 
 return bnglItems.map(item => ({
   type: typeFromPath(path),
-  file: basename(path),
-  path,
-  yaml_file: basename(path),
+  file: basename(item.path),
+  path: item.path,
+  yaml_file: path,
   yaml_path: path,
   bngl_file: item.label,
   bngl_path: item.path,
@@ -457,11 +486,11 @@ return bnglItems.map(item => ({
       }];
     }
 
-   return bnglItems.map(item => ({
+return bnglItems.map(item => ({
   type: typeFromPath(path),
-  file: basename(path),
-  path,
-  yaml_file: basename(path),
+  file: basename(item.path),
+  path: item.path,
+  yaml_file: path,
   yaml_path: path,
   bngl_file: item.label,
   bngl_path: item.path,
@@ -505,31 +534,22 @@ async function loadAllMetadata() {
 
   const allYamlPaths = allPaths.filter(isYamlPath);
 
-  const yamlPaths = [];
-  const folders = new Map();
+ const yamlPaths = [];
 
-  for (const path of allYamlPaths) {
-    const slash = path.lastIndexOf("/");
-    const folder = slash === -1 ? "" : path.substring(0, slash);
-
-  if (!folders.has(folder)) {
-    folders.set(folder, []);
-  }
-  folders.get(folder).push(path);
-}
-
-  for (const paths of folders.values()) {
-   const namedMetadata = paths.find(p => /_metadata\.ya?ml$/i.test(p));
-
-  if (namedMetadata) {
-    yamlPaths.push(namedMetadata);
-  } else {
-    const metadata = paths.find(p => /\/metadata\.ya?ml$/i.test(p));
-    if (metadata) {
-      yamlPaths.push(metadata);
-    }
+for (const path of allYamlPaths) {
+  if (
+    /_metadata\.ya?ml$/i.test(path) ||
+    /\/metadata\.ya?ml$/i.test(path)
+  ) {
+    yamlPaths.push(path);
   }
 }
+
+console.log(
+  "Thomas2016 YAMLs:",
+  yamlPaths.filter(p => p.includes("Thomas2016"))
+);
+
   const bnglPaths = allPaths.filter(isBnglPath);
 
   statusEl.textContent =
@@ -539,10 +559,21 @@ async function loadAllMetadata() {
 yamlPaths.map(path => loadYamlFile(path, bnglPaths, aiFiles))
   );
 
-  rows = rowGroups.flat();
+rows = rowGroups.flat();
 
-  console.log("rows:", rows.length);
-  console.log(rows[0]);
+console.table(
+  rows
+    .filter(r => r.path?.includes("Salazar-Cavazos2019"))
+    .map(r => ({
+      id: r.id,
+      name: r.name,
+      description: r.description,
+      bngl: r.bngl_file,
+      path: r.path
+    }))
+);
+
+console.log("rows:", rows.length);
 
   const allColumnNames = new Set();
   rows.forEach(row => Object.keys(row).forEach(key => allColumnNames.add(key)));
@@ -552,12 +583,12 @@ yamlPaths.map(path => loadYamlFile(path, bnglPaths, aiFiles))
     "name",
     "citation.year",
     "citation.pmid",
+    "citation.doi",
     "citation.reference",
     "description",
     "tools",
     "simulate_tools",
     "ai_column",
-    "citation.doi",
     "github_link",
     "bngl_item",
     "yaml_github",
